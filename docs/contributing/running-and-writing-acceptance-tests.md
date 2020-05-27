@@ -508,11 +508,22 @@ func TestAccAwsExampleThing_basic(t *testing.T) {
   resourceName := "aws_example_thing.test"
 
   resource.ParallelTest(t, resource.TestCase{
-    PreCheck:     func() { testAccPreCheck(t), testAccPreCheckAwsExampleThing(t) },
+    PreCheck:     func() { testAccPreCheck(t), testAccPreCheckAwsExample(t) },
     // ... additional checks follow ...
   })
 }
 
+func testAccPreCheckAwsExample(t *testing.T) {
+	conn := testAccProvider.Meta().(*AWSClient).exampleconn
+	input := &example.ListThingsInput{}
+	_, err := conn.ListThings(input)
+	if testAccPreCheckSkipError(err) {
+		t.Skipf("skipping acceptance testing: %s", err)
+	}
+	if err != nil {
+		t.Fatalf("unexpected PreCheck error: %s", err)
+	}
+}
 ```
 
 #### Disappears Acceptance Tests
