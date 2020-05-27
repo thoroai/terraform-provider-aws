@@ -496,6 +496,25 @@ resource "aws_example_thing" "test" {
 }
 ```
 
+#### Service Availability Test
+
+When new AWS services are added to the provider, a simple read-only request (e.g. list all X service things) should be implemented in an acceptance test PreCheck function that helps the acceptance testing determine if the service exists for the particular environment it runs in.
+
+For example:
+
+```go
+func TestAccAwsExampleThing_basic(t *testing.T) {
+  rName := acctest.RandomWithPrefix("tf-acc-test")
+  resourceName := "aws_example_thing.test"
+
+  resource.ParallelTest(t, resource.TestCase{
+    PreCheck:     func() { testAccPreCheck(t), testAccPreCheckAwsExampleThing(t) },
+    // ... additional checks follow ...
+  })
+}
+
+```
+
 #### Disappears Acceptance Tests
 
 This test is generally implemented second. It is straightforward to setup once the basic test is passing since it can reuse that test configuration. It prevents a common bug report with Terraform resources that error when they can not be found (e.g. deleted outside Terraform).
